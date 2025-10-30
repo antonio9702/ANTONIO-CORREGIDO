@@ -113,8 +113,6 @@
   if (totalPiezas < 50) rendimiento = "Bajo";
   else if (totalPiezas <= 100) rendimiento = "Aceptable";
   else rendimiento = "Excelente";
-
-  // Crear filas de la tabla
   let filas = producciones.map((p, i) => `
     <tr>
       <td>${i + 1}</td>

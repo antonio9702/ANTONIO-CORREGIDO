@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Control de Producción</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #002244;
+      margin-bottom: 15px;
+    }
+
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 80%;
+      max-width: 600px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border-bottom: 1px solid #000;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    .titulo {
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .encabezado {
+      text-align: left;
+      font-weight: bold;
+      background-color: #e0e0e0;
+    }
+
+    .totales {
+      font-weight: bold;
+      background-color: #fafafa;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Control de Producción</h1>
+
+<script>
+  const nombre = prompt("Nombre del operario:");
+  if (!nombre) {
+    alert("Operación cancelada.");
+    throw new Error("Sin nombre");
+  }
+
+  const producciones = [];
+
+  do {
+    const tipo = parseInt(prompt("Elige el tipo de producto:\n1. Componente A\n2. Componente B\n3. Componente C"));
+    if (!tipo || tipo < 1 || tipo > 3) {
+      alert("Opción no válida.");
+      continue;
+    }
+
+    const piezasStr = prompt("Cantidad de piezas producidas hoy:");
+    if (piezasStr === null) break;
+
+    const piezas = parseInt(piezasStr, 10);
+    if (isNaN(piezas) || piezas < 0) {
+      alert("Ingresa un número válido.");
+      continue;
+    }
+
+    let costoUnitario = 0;
+    let nombreProducto = "";
+    switch (tipo) {
+      case 1: costoUnitario = 5000; nombreProducto = "Componente A"; break;
+      case 2: costoUnitario = 7000; nombreProducto = "Componente B"; break;
+      case 3: costoUnitario = 10000; nombreProducto = "Componente C"; break;
+    }
+
+    producciones.push({
+      producto: nombreProducto,
+      piezas: piezas,
+      costoUnitario: costoUnitario,
+      costoTotal: piezas * costoUnitario
+    });
+
+  } while (confirm("¿Registrar otro día?"));
+
+  if (producciones.length === 0) {
+    alert("No se registraron días de producción.");
+    throw new Error("Sin datos");
+  }
+
+  const nf = new Intl.NumberFormat("es-CO");
+
+  let totalPiezas = producciones.reduce((a, p) => a + p.piezas, 0);
+  let totalCosto = producciones.reduce((a, p) => a + p.costoTotal, 0);
+
+  let rendimiento = "";
+  if (totalPiezas < 50) rendimiento = "Bajo";
+  else if (totalPiezas <= 100) rendimiento = "Aceptable";
+  else rendimiento = "Excelente";
+
+  // Crear filas de la tabla
+  let filas = producciones.map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${p.producto}</td>
+      <td>${p.piezas}</td>
+      <td>$${nf.format(p.costoUnitario)}</td>
+      <td>$${nf.format(p.costoTotal)}</td>
+    </tr>
+  `).join("");
+
+  document.write(`
+    <table>
+      <tr><th colspan="5" class="encabezado">Resumen de Producción</th></tr>
+      <tr><td colspan="2"><b>Operario:</b></td><td colspan="3">${nombre}</td></tr>
+      <tr><td colspan="2"><b>Rendimiento:</b></td><td colspan="3">${rendimiento}</td></tr>
+      <tr>
+        <th>Día</th>
+        <th>Producto</th>
+        <th>Piezas</th>
+        <th>Costo Unitario</th>
+        <th>Costo Total</th>
+      </tr>
+      ${filas}
+      <tr class="totales">
+        <td colspan="2"><b>Totales</b></td>
+        <td><b>${totalPiezas}</b></td>
+        <td></td>
+        <td><b>$${nf.format(totalCosto)}</b></td>
+      </tr>
+    </table>
+  `);
+</script>
+
+</body>
+</html>
+
+
